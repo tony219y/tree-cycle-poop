@@ -6,7 +6,7 @@ public class Main {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(600, 600);
 
-        JLabel label = new JLabel("Hello, CGI project!", SwingConstants.CENTER);
+        JLabel label = new JLabel("Hi, CGI project!", SwingConstants.CENTER);
         frame.add(label);
 
         frame.setVisible(true);
