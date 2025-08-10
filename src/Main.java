@@ -1,14 +1,18 @@
 import javax.swing.*;
 
+import Controllers.AnimationController;
+
 public class Main {
     public static void main(String[] args) {
         JFrame frame = new JFrame("My CGI project");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(600, 600);
 
-        JLabel label = new JLabel("Hello, CGI project!", SwingConstants.CENTER);
-        frame.add(label);
+        AnimationController controller = new AnimationController();
+        frame.add(controller);
 
         frame.setVisible(true);
+
+        controller.startAnimation();
     }
 }
