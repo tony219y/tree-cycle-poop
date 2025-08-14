@@ -1,6 +1,7 @@
 package Background;
 
 import Colors.Ground.GroundColor;
+import Components.Tree;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,6 +11,10 @@ import java.util.List;
 import java.awt.event.*;
 
 public class Ground extends JPanel {
+
+    private Tree tree;
+
+
     private Runnable repaintCallback;
 
     private Timer timer;
@@ -31,6 +36,8 @@ public class Ground extends JPanel {
     public Ground() {
         generateRocks(600, 600);
         generateGrass(650, 600);
+
+        tree = new Tree();
         tick();
     }
 
@@ -42,6 +49,7 @@ public class Ground extends JPanel {
         g2d.setColor(GroundColor.BROWN_PRIMARY);
         g2d.fillRect(0, height - TOP_GROUND_HEIGHT, width, TOP_GROUND_HEIGHT);
 
+        tree.draw(g2d, width, height);
         drawGrass(g2d, width, height);
 
         // under layer ground
@@ -138,7 +146,6 @@ public class Ground extends JPanel {
 
         for (int i = 0; i < numGrass; i++) {
             int x1 = random.nextInt(width - 30);
-            // int x2 = random.nextInt(width - 30);
 
             int grassSize = random.nextInt(21) + 10; // 10-30 px
 
