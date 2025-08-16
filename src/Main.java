@@ -304,7 +304,83 @@ public class Main extends JPanel {
     // ? ================================================
     // ? Draw a Slime
     // ? ================================================
+    class Slime {
 
+        int frame = 0;
+        int pixelSize = 8; // ขยาย pixel ให้ชัด (ลองปรับได้)
+        int offsetX = 50, offsetY = 50; // ตำแหน่งวาง sprite
+
+        Color[] colorMap = {
+                new Color(0, 0, 0, 0), // 0 background
+                new Color(153, 204, 255), // 1 around
+                new Color(102, 178, 255), // 2 body
+                new Color(255, 255, 153), // 3 shadow
+                new Color(0, 0, 0) // 4 eye/outline
+        };
+
+        // ! Changed to 8x8 slime sprite
+        int[][][] slime = {
+                { // Frame 1
+                        { 0, 0, 0, 0, 0, 0, 0, 0 },
+                        { 0, 1, 1, 1, 1, 1, 1, 1 },
+                        { 0, 1, 0, 0, 0, 0, 0, 0 },
+                        { 0, 1, 0, 0, 0, 0, 0, 0 },
+                        { 0, 1, 0, 0, 0, 0, 0, 0 },
+                        { 0, 1, 0, 0, 0, 0, 0, 0 },
+                        { 0, 1, 0, 0, 0, 0, 0, 0 },
+                        { 0, 1, 1, 1, 1, 1, 0, 0 },
+                },
+                { // Frame 2
+                        { 0, 0, 0, 0, 0, 0, 0, 0 },
+                        { 0, 0, 0, 0, 0, 0, 0, 0 },
+                        { 0, 0, 0, 0, 0, 0, 0, 0 },
+                        { 0, 0, 0, 0, 0, 0, 0, 0 },
+                        { 0, 0, 0, 0, 0, 0, 0, 0 },
+                        { 0, 0, 0, 0, 0, 0, 0, 0 },
+                        { 0, 0, 0, 0, 0, 0, 0, 0 },
+                        { 0, 0, 0, 0, 0, 0, 0, 0 },
+                }
+
+        };
+
+        int direction = 1; // 1 = ไปข้างหน้า, -1 = ย้อนกลับ
+
+        public Slime() {
+            startAnimation();
+        }
+
+        private void startAnimation() {
+            new Timer(100, e -> {
+                frame += direction;
+
+                // ถ้าถึงเฟรมสุดท้าย -> สลับเป็นถอยหลัง
+                if (frame == slime.length - 1) {
+                    direction = -1;
+                }
+                // ถ้าถึงเฟรมแรก -> สลับเป็นเดินหน้า
+                else if (frame == 0) {
+                    direction = 1;
+                }
+
+                repaint();
+            }).start();
+        }
+
+        public void drawBird(Graphics g) {
+            // ! Draw a pixel per pixel
+            for (int i = 0; i < slime[frame].length; i++) { // loop row ของ frame ปัจจุบัน
+                for (int j = 0; j < slime[frame][i].length; j++) { // loop column
+                    int colorIndex = slime[frame][i][j];
+                    if (colorIndex == 0)
+                        continue; // 0 = background
+                    g.setColor(colorMap[colorIndex]);
+                    putPixel(g, offsetX + j * pixelSize, offsetY + i * pixelSize, pixelSize);
+                }
+            }
+
+        }
+
+    }
     // ? ================================================
     // ? Draw a Line
     // ? ================================================
