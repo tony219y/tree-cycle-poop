@@ -126,68 +126,69 @@ public class Main extends JPanel {
     // ? ================================================
     // ? Draw a Ellipse
     // ? ================================================
-    // public void drawEllipse(Graphics g, int xc, int yc, int rx, int ry) {
-    // // Draw Ellipse (Midpoint Ellipse Algorithm)
-    // int x = 0, y = ry;
-    // int rx2 = rx * rx, ry2 = ry * ry;
-    // int tworx2 = 2 * rx2, twory2 = 2 * ry2;
-    // int px = 0, py = tworx2 * y;
+    public void drawEllipse(Graphics g, int xc, int yc, int rx, int ry) {
+        // Draw Ellipse (Midpoint Ellipse Algorithm)
+        int x = 0, y = ry;
+        int rx2 = rx * rx, ry2 = ry * ry;
+        int tworx2 = 2 * rx2, twory2 = 2 * ry2;
+        int px = 0, py = tworx2 * y;
 
-    // putPixel(g, xc + x, yc + y, 1);
-    // putPixel(g, xc - x, yc + y, 1);
-    // putPixel(g, xc + x, yc - y, 1);
-    // putPixel(g, xc - x, yc - y, 1);
+        putPixel(g, xc + x, yc + y, 1);
+        putPixel(g, xc - x, yc + y, 1);
+        putPixel(g, xc + x, yc - y, 1);
+        putPixel(g, xc - x, yc - y, 1);
 
-    // // Region 1
-    // int p = (int) (ry2 - (rx2 * ry) + (0.25 * rx2));
-    // while (px < py) {
-    // x++;
-    // px += twory2;
-    // if (p < 0) {
-    // p += ry2 + px;
-    // } else {
-    // y--;
-    // py -= tworx2;
-    // p += ry2 + px - py;
-    // }
+        // Region 1
+        int p = (int) (ry2 - (rx2 * ry) + (0.25 * rx2));
+        while (px < py) {
+            x++;
+            px += twory2;
+            if (p < 0) {
+                p += ry2 + px;
+            } else {
+                y--;
+                py -= tworx2;
+                p += ry2 + px - py;
+            }
 
-    // // ! FILL A COLOR
-    // drawHLine(g, xc - x, xc + x, yc + y, 1);
-    // drawHLine(g, xc - x, xc + x, yc - y, 1);
+            // ! FILL A COLOR
+            drawHLine(g, xc - x, xc + x, yc + y, 1);
+            drawHLine(g, xc - x, xc + x, yc - y, 1);
 
-    // // ! JUST DRAW A SINGLE PIXEL
-    // // putPixel(g, xc + x, yc + y);
-    // // putPixel(g, xc - x, yc + y);
-    // // putPixel(g, xc + x, yc - y);
-    // // putPixel(g, xc - x, yc - y);
-    // }
+            // ! JUST DRAW A SINGLE PIXEL
+            // putPixel(g, xc + x, yc + y);
+            // putPixel(g, xc - x, yc + y);
+            // putPixel(g, xc + x, yc - y);
+            // putPixel(g, xc - x, yc - y);
+        }
 
-    // // Region 2
-    // p = (int) (ry2 * (x + 0.5) * (x + 0.5) + rx2 * (y - 1) * (y - 1) - rx2 *
-    // ry2);
-    // while (y > 0) {
-    // y--;
-    // py -= tworx2;
-    // if (p > 0) {
-    // p += rx2 - py;
-    // } else {
-    // x++;
-    // px += twory2;
-    // p += rx2 - py + px;
-    // }
+        // Region 2
+        p = (int) (ry2 * (x + 0.5) * (x + 0.5) + rx2 * (y - 1) * (y - 1) - rx2 *
+                ry2);
+        while (y > 0) {
+            y--;
+            py -= tworx2;
+            if (p > 0) {
+                p += rx2 - py;
+            } else {
+                x++;
+                px += twory2;
+                p += rx2 - py + px;
+            }
 
-    // // ! JUST DRAW A SINGLE PIXEL
-    // // putPixel(g, xc + x, yc + y);
-    // // putPixel(g, xc - x, yc + y);
-    // // putPixel(g, xc + x, yc - y);
-    // // putPixel(g, xc - x, yc - y);
+            // ! JUST DRAW A SINGLE PIXEL
+            // putPixel(g, xc + x, yc + y);
+            // putPixel(g, xc - x, yc + y);
+            // putPixel(g, xc + x, yc - y);
+            // putPixel(g, xc - x, yc - y);
 
-    // // ! FILL A COLOR
-    // drawHLine(g, xc - x, xc + x, yc + y, 1);
-    // drawHLine(g, xc - x, xc + x, yc - y, 1);
-    // }
+            // ! FILL A COLOR
+            drawHLine(g, xc - x, xc + x, yc + y, 1);
+            drawHLine(g, xc - x, xc + x, yc - y, 1);
+        }
 
-    // }
+    }
+
     // ? ================================================
     // ? Draw a bird
     // ? ================================================
@@ -332,12 +333,12 @@ public class Main extends JPanel {
     // ? Draw a Triangle
     // ? ================================================
 
-    // public void drawTriangle(Graphics g, int x1, int y1, int x2, int y2, int x3,
-    // int y3, int thickness) {
-    // drawLine(g, x1, y1, x2, y2, thickness);
-    // drawLine(g, x2, y2, x3, y3, thickness);
-    // drawLine(g, x3, y3, x1, y1, thickness);
-    // }
+    public void drawTriangle(Graphics g, int x1, int y1, int x2, int y2, int x3,
+    int y3, int thickness) {
+    drawLine(g, x1, y1, x2, y2, thickness);
+    drawLine(g, x2, y2, x3, y3, thickness);
+    drawLine(g, x3, y3, x1, y1, thickness);
+    }
 
     // ? ================================================
     // ? Draw a Curve Line
