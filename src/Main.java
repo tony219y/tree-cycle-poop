@@ -5,19 +5,86 @@ public class Main extends JPanel {
 
     private Ground ground;
 
+
+    //! Example Draw a pixel
+    // int frame = 0;
+    // int pixelSize = 2; // ขยาย pixel
+    // int offsetX = 50, offsetY = 50; // ตำแหน่งวาง sprite
+
+    // Color[] colorMap = {
+    //         Color.WHITE, // 0
+    //         Color.RED, // 1
+    //         Color.YELLOW, // 2
+    //         Color.ORANGE // 3
+    // };
+
+    // int[][][] sprite = {
+    //         { // Frame 0
+    //                 { 0, 0, 1, 1, 1, 1, 0, 0 },
+    //                 { 0, 1, 2, 2, 2, 2, 1, 0 },
+    //                 { 1, 2, 3, 3, 3, 3, 2, 1 },
+    //                 { 1, 2, 3, 3, 3, 3, 2, 1 },
+    //                 { 1, 2, 3, 3, 3, 3, 2, 1 },
+    //                 { 0, 1, 2, 2, 2, 2, 1, 0 },
+    //                 { 0, 0, 1, 1, 1, 1, 0, 0 },
+    //                 { 0, 0, 0, 1, 1, 0, 0, 0 },
+    //         },
+    //         { // Frame 1
+    //                 { 0, 0, 1, 1, 1, 1, 0, 0 },
+    //                 { 0, 1, 2, 2, 2, 2, 1, 0 },
+    //                 { 1, 2, 3, 3, 3, 3, 2, 1 },
+    //                 { 1, 2, 3, 3, 3, 3, 2, 1 },
+    //                 { 1, 2, 3, 3, 3, 3, 2, 1 },
+    //                 { 0, 1, 1, 1, 1, 1, 1, 0 },
+    //                 { 0, 0, 0, 0, 0, 0, 0, 0 },
+    //                 { 0, 0, 0, 0, 0, 0, 0, 0 },
+    //         },
+    //         { // Frame 1
+    //                 { 0, 0, 1, 1, 1, 1, 0, 0 },
+    //                 { 0, 1, 2, 2, 2, 2, 1, 0 },
+    //                 { 1, 2, 3, 3, 3, 3, 2, 1 },
+    //                 { 1, 2, 3, 3, 3, 3, 2, 1 },
+    //                 { 1, 2, 3, 3, 3, 3, 2, 1 },
+    //                 { 0, 1, 2, 2, 2, 2, 1, 0 },
+    //                 { 0, 0, 1, 1, 1, 1, 0, 0 },
+    //                 { 0, 0, 0, 0, 0, 0, 0, 0 },
+    //         },
+    // };
+
     // ! Main Constructors
     public Main() {
         setPreferredSize(new Dimension(600, 600));
         initializeComponents();
+        startAnimation();
+    }
+
+    private void startAnimation() {
+        //! Example run a frame
+        // new Timer(300, e -> { // ทุก 300ms
+        //     frame = 1 - frame; // สลับ 0 ↔ 1
+        //     repaint();
+        // }).start();
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
-        
-        g2d.setColor(Color.RED);
+
+        g2d.setColor(Color.BLACK);
         ground.drawGround(g);
+
+
+        //! Draw a pixel per pixel
+        // for (int i = 0; i < sprite[frame].length; i++) { // loop row ของ frame ปัจจุบัน
+        //     for (int j = 0; j < sprite[frame][i].length; j++) { // loop column
+        //         int colorIndex = sprite[frame][i][j];
+        //         if (colorIndex == 0)
+        //             continue; // 0 = background
+        //         g.setColor(colorMap[colorIndex]);
+        //         putPixel(g, offsetX + j * pixelSize, offsetY + i * pixelSize, pixelSize);
+        //     }
+        // }
 
         // * Make a Rectangle
         // drawRect(g, 0, getHeight() - 100, 600, 100);
@@ -27,8 +94,8 @@ public class Main extends JPanel {
         // drawCircle(g, getWidth() - 100, 100, 50);
 
         // * Make a Ellipse
-        // g.setColor(Color.BLUE);
-        // drawEllipse(g, 100, 100, 50, 100);
+        g.setColor(Color.BLUE);
+        drawEllipse(g, 100, 100, 50, 100);
 
         // * Make a Line
         // g.setColor(Color.GRAY);
@@ -53,6 +120,7 @@ public class Main extends JPanel {
 
     private void initializeComponents() {
         ground = new Ground();
+        // bird = new Bird();
     }
 
     // * ================================================
@@ -247,15 +315,18 @@ public class Main extends JPanel {
     // ! GROUND
     // ! ================================================
     class Ground {
-        //TODO : Wait for Implement
+        // TODO : Wait for Implement
         public Ground() {
 
         }
 
         public void drawGround(Graphics g) {
             drawRect(g, 0, getHeight() - 100, getWidth(), 100);
+            g.setColor(Color.GRAY);
+            drawRect(g, 10, getHeight() - 90, getWidth()-20, 80);
         }
     }
+    
 
     public static void main(String[] args) {
         JFrame frame = new JFrame("Polygon Rectangle Example");
