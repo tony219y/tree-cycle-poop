@@ -9,11 +9,21 @@ public class Main extends JPanel {
     private Bird bird;
     private Slime slime;
     private Plane plane;
+
     // ! Main Constructors
     public Main() {
         setPreferredSize(new Dimension(600, 600));
         initializeComponents();
 
+        new Timer(100, e -> {
+            if (bird.offsetX < 350) {
+                bird.offsetX += 5; // move speed
+            }else if (bird.offsetX >= 350) {
+                plane.setFrame(1); // index 1 = Frame 2
+            }
+
+            repaint();
+        }).start();
     }
 
     @Override
@@ -195,7 +205,6 @@ public class Main extends JPanel {
 
     }
 
-    
     // ? ================================================
     // ? Draw a Line
     // ? ================================================
@@ -255,42 +264,43 @@ public class Main extends JPanel {
         }
         return res;
     }
-    //* */
+    // * */
 
     // * ================================================
     // * Palette
     // * ================================================
-    class Palette{
+    class Palette {
 
-        //* Dirt
+        // * Dirt
         public static final Color DIRT_1 = Color.decode("#ead0a8");
         public static final Color DIRT_2 = Color.decode("#b69f66");
         public static final Color DIRT_3 = Color.decode("#6b5428");
         public static final Color DIRT_4 = Color.decode("#76552b");
         public static final Color DIRT_5 = Color.decode("#402905");
-        
-        //* Bird
+
+        // * Bird
         public static final Color BIRD_1 = Color.decode("#99ccff");
         public static final Color BIRD_2 = Color.decode("#66b2ff");
         public static final Color BIRD_3 = Color.decode("#ffff99");
         public static final Color BIRD_4 = Color.decode("#000000");
-        //* Slime
+        // * Slime
         public static final Color SLIME_1 = Color.decode("#009900");
         public static final Color SLIME_2 = Color.decode("#66ff66");
         public static final Color SLIME_3 = Color.decode("#8cff9d");
         public static final Color SLIME_4 = Color.decode("#000000");
-        //* Plane
+        // * Plane
         public static final Color PLANE_1 = Color.decode("#ffffff");
         public static final Color PLANE_2 = Color.decode("#99ccff");
         public static final Color PLANE_3 = Color.decode("#585858");
-        //public static final Color PLANE_4 = Color.decode("#585858");
+        public static final Color PLANE_4 = Color.decode("#ff3b3b");
+        public static final Color PLANE_5 = Color.decode("#66b2ff");
     }
 
     // * ================================================
     // * Component
     // * ================================================
 
-    class Sky{
+    class Sky {
 
     }
 
@@ -298,7 +308,7 @@ public class Main extends JPanel {
     // ! GROUND
     // ! ================================================
     class Ground {
-        int baseY = getHeight()-100;
+        int baseY = getHeight() - 100;
 
         Random random = new Random();
 
@@ -307,19 +317,20 @@ public class Main extends JPanel {
         }
 
         public void drawGround(Graphics g) {
-            
+
             g.setColor(Palette.DIRT_5);
-            drawRect(g, 0, getHeight()-100, getWidth(), 100);
+            drawRect(g, 0, getHeight() - 100, getWidth(), 100);
 
             // drawRect(g, 10, getHeight() - 90, getWidth() - 20, 80);
             // g.setColor(Color.RED);
             // drawRect(g, 20, getHeight() - 80, getWidth() - 40, 60);
         }
 
-        private void detailDirt(Graphics g){
+        private void detailDirt(Graphics g) {
 
         }
     }
+
     // ? ================================================
     // ? Draw a bird
     // ? ================================================
@@ -327,7 +338,7 @@ public class Main extends JPanel {
 
         int frame = 0;
         int pixelSize = 8; // ขยาย pixel ให้ชัด (ลองปรับได้)
-        int offsetX = 50, offsetY = 50; // ตำแหน่งวาง sprite
+        int offsetX = 50, offsetY = 70; // ตำแหน่งวาง sprite
 
         Color[] colorMap = {
                 null,
@@ -342,21 +353,21 @@ public class Main extends JPanel {
                 { // Frame 1
                         { 0, 0, 0, 0, 0, 0, 0, 0 },
                         { 0, 0, 0, 0, 0, 0, 0, 0 },
+                        { 0, 0, 0, 0, 0, 0, 0, 0 },
                         { 0, 1, 1, 0, 2, 2, 2, 0 },
                         { 0, 0, 1, 1, 2, 4, 2, 0 },
                         { 2, 2, 2, 1, 1, 2, 2, 3 },
                         { 0, 0, 2, 2, 2, 2, 2, 0 },
                         { 0, 0, 0, 0, 0, 0, 0, 0 },
-                        { 0, 0, 0, 0, 0, 0, 0, 0 },
                 },
                 { // Frame 2
+                        { 0, 0, 0, 0, 0, 0, 0, 0 },
                         { 0, 0, 0, 0, 0, 0, 0, 0 },
                         { 0, 0, 0, 0, 0, 0, 0, 0 },
                         { 0, 0, 0, 0, 2, 2, 2, 0 },
                         { 0, 1, 1, 1, 2, 4, 2, 0 },
                         { 2, 2, 1, 1, 1, 2, 2, 3 },
                         { 0, 0, 2, 2, 2, 2, 2, 0 },
-                        { 0, 0, 0, 0, 0, 0, 0, 0 },
                         { 0, 0, 0, 0, 0, 0, 0, 0 },
                 },
                 { // Frame 3
@@ -381,12 +392,12 @@ public class Main extends JPanel {
                 },
                 { // Frame 5
                         { 0, 0, 0, 0, 0, 0, 0, 0 },
-                        { 0, 0, 0, 0, 0, 0, 0, 0 },
                         { 0, 0, 0, 0, 2, 2, 2, 0 },
                         { 0, 0, 2, 2, 2, 4, 2, 0 },
                         { 2, 2, 2, 2, 1, 2, 2, 3 },
                         { 0, 0, 2, 1, 1, 2, 2, 0 },
                         { 0, 0, 1, 1, 0, 0, 0, 0 },
+                        { 0, 0, 0, 0, 0, 0, 0, 0 },
                         { 0, 0, 0, 0, 0, 0, 0, 0 },
                 }
 
@@ -416,17 +427,18 @@ public class Main extends JPanel {
         }
 
         public void drawBird(Graphics g) {
-            // ! Draw a pixel per pixel
-            for (int i = 0; i < bird[frame].length; i++) { // loop row ของ frame ปัจจุบัน
-                for (int j = 0; j < bird[frame][i].length; j++) { // loop column
+            if (offsetX >= 350)
+                return; 
+
+            for (int i = 0; i < bird[frame].length; i++) {
+                for (int j = 0; j < bird[frame][i].length; j++) {
                     int colorIndex = bird[frame][i][j];
                     if (colorIndex == 0)
-                        continue; // 0 = background
+                        continue;
                     g.setColor(colorMap[colorIndex]);
                     putPixel(g, offsetX + j * pixelSize, offsetY + i * pixelSize, pixelSize);
                 }
             }
-
         }
 
     }
@@ -438,7 +450,7 @@ public class Main extends JPanel {
 
         int frame = 0;
         int pixelSize = 8; // ขยาย pixel ให้ชัด (ลองปรับได้)
-        int offsetX = 400, offsetY =400; // ตำแหน่งวาง sprite
+        int offsetX = 400, offsetY = 400; // ตำแหน่งวาง sprite
 
         Color[] colorMap = {
                 null,
@@ -511,6 +523,7 @@ public class Main extends JPanel {
         }
 
     }
+
     // ? ================================================
     // ? Draw a Plane
     // ? ================================================
@@ -518,14 +531,15 @@ public class Main extends JPanel {
 
         int frame = 0;
         int pixelSize = 30; // ขยาย pixel ให้ชัด (ลองปรับได้)
-        int offsetX = 400, offsetY =100; // ตำแหน่งวาง sprite
+        int offsetX = 400, offsetY = 0; // ตำแหน่งวาง sprite
 
         Color[] colorMap = {
                 null,
                 Palette.PLANE_1,
                 Palette.PLANE_2,
                 Palette.PLANE_3,
-                
+                Palette.PLANE_4,
+                Palette.PLANE_5,
         };
 
         // ! Changed to 8x8 plane sprite
@@ -544,8 +558,8 @@ public class Main extends JPanel {
                         { 0, 0, 0, 0, 0, 0, 0, 0 },
                         { 0, 0, 0, 0, 0, 0, 0, 0 },
                         { 0, 0, 1, 1, 1, 1, 1, 1 },
-                        { 0, 1, 2, 2, 1, 1, 1, 1 },
-                        { 1, 2, 2, 2, 1, 3, 3, 3 },
+                        { 0, 4, 2, 2, 1, 1, 1, 1 },
+                        { 4, 2, 2, 2, 1, 3, 3, 3 },
                         { 1, 1, 1, 1, 1, 1, 1, 1 },
                         { 0, 0, 0, 0, 0, 0, 0, 0 },
                         { 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -556,7 +570,13 @@ public class Main extends JPanel {
         int direction = 1; // 1 = ไปข้างหน้า, -1 = ย้อนกลับ
 
         public Plane() {
-            startAnimation();
+            // startAnimation();
+        }
+
+        public void setFrame(int frame) {
+            if (frame >= 0 && frame < plane.length) {
+                this.frame = frame;
+            }
         }
 
         private void startAnimation() {
