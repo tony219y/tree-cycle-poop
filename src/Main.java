@@ -7,6 +7,7 @@ public class Main extends JPanel {
 
     private Ground ground;
     private Bird bird;
+    private Slime slime;
 
     // ! Main Constructors
     public Main() {
@@ -22,6 +23,7 @@ public class Main extends JPanel {
 
         ground.drawGround(g2d);
         bird.drawBird(g);
+        slime.drawSlime(g);
 
         // * Make a Rectangle
         // drawRect(g, 0, getHeight() - 100, 600, 100);
@@ -58,6 +60,7 @@ public class Main extends JPanel {
     private void initializeComponents() {
         ground = new Ground();
         bird = new Bird();
+        slime = new Slime();
     }
 
     // * ================================================
@@ -190,6 +193,131 @@ public class Main extends JPanel {
 
     }
 
+    
+    // ? ================================================
+    // ? Draw a Line
+    // ? ================================================
+    public void drawLine(Graphics g, int x1, int y1, int x2, int y2, int thickness) {
+        int dx = Math.abs(x2 - x1), dy = Math.abs(y2 - y1);
+        int sx = x1 < x2 ? 1 : -1;
+        int sy = y1 < y2 ? 1 : -1;
+        int err = dx - dy;
+
+        while (true) {
+            putPixel(g, x1, y1, thickness);
+            if (x1 == x2 && y1 == y2)
+                break;
+            int e2 = 2 * err;
+            if (e2 > -dy) {
+                err -= dy;
+                x1 += sx;
+            }
+            if (e2 < dx) {
+                err += dx;
+                y1 += sy;
+            }
+        }
+    }
+
+    // ? ================================================
+    // ? Draw a Triangle
+    // ? ================================================
+
+    public void drawTriangle(Graphics g, int x1, int y1, int x2, int y2, int x3,
+            int y3, int thickness) {
+        drawLine(g, x1, y1, x2, y2, thickness);
+        drawLine(g, x2, y2, x3, y3, thickness);
+        drawLine(g, x3, y3, x1, y1, thickness);
+    }
+
+    // ? ================================================
+    // ? Draw a Curve Line
+    // ? ================================================
+    public void drawBezier(Graphics g, int[] xPoints, int[] yPoints, int thickness) {
+        int n = xPoints.length - 1; // degree
+        for (double t = 0; t <= 1; t += 0.001) { // step เล็กๆ เพื่อ smooth curve
+            double x = 0, y = 0;
+            for (int i = 0; i <= n; i++) {
+                double coeff = binomial(n, i) * Math.pow(1 - t, n - i) * Math.pow(t, i);
+                x += coeff * xPoints[i];
+                y += coeff * yPoints[i];
+            }
+            putPixel(g, (int) Math.round(x), (int) Math.round(y), thickness);
+        }
+    }
+
+    private int binomial(int n, int k) {
+        int res = 1;
+        for (int i = 1; i <= k; i++) {
+            res = res * (n - i + 1) / i;
+        }
+        return res;
+    }
+    //* */
+
+    // * ================================================
+    // * Palette
+    // * ================================================
+    class Palette{
+
+        //* Dirt
+        public static final Color DIRT_1 = Color.decode("#ead0a8");
+        public static final Color DIRT_2 = Color.decode("#b69f66");
+        public static final Color DIRT_3 = Color.decode("#6b5428");
+        public static final Color DIRT_4 = Color.decode("#76552b");
+        public static final Color DIRT_5 = Color.decode("#402905");
+        
+        //* Bird
+        public static final Color BIRD_1 = Color.decode("#99ccff");
+        public static final Color BIRD_2 = Color.decode("#66b2ff");
+        public static final Color BIRD_3 = Color.decode("#ffff99");
+        public static final Color BIRD_4 = Color.decode("#000000");
+        //* Slime
+        public static final Color SLIME_1 = Color.decode("#009900");
+        public static final Color SLIME_2 = Color.decode("#66ff66");
+        public static final Color SLIME_3 = Color.decode("#8cff9d");
+        public static final Color SLIME_4 = Color.decode("#000000");
+        //* Plane
+        public static final Color PLANE_1 = Color.decode("#009900");
+        public static final Color PLANE_2 = Color.decode("#66ff66");
+        public static final Color PLANE_3 = Color.decode("#8cff9d");
+        public static final Color PLANE_4 = Color.decode("#000000");
+    }
+
+    // * ================================================
+    // * Component
+    // * ================================================
+
+    class Sky{
+
+    }
+
+    // ! ================================================
+    // ! GROUND
+    // ! ================================================
+    class Ground {
+        int baseY = getHeight()-100;
+
+        Random random = new Random();
+
+        public Ground() {
+
+        }
+
+        public void drawGround(Graphics g) {
+            
+            g.setColor(Palette.DIRT_5);
+            drawRect(g, 0, getHeight()-100, getWidth(), 100);
+
+            // drawRect(g, 10, getHeight() - 90, getWidth() - 20, 80);
+            // g.setColor(Color.RED);
+            // drawRect(g, 20, getHeight() - 80, getWidth() - 40, 60);
+        }
+
+        private void detailDirt(Graphics g){
+
+        }
+    }
     // ? ================================================
     // ? Draw a bird
     // ? ================================================
@@ -200,11 +328,11 @@ public class Main extends JPanel {
         int offsetX = 50, offsetY = 50; // ตำแหน่งวาง sprite
 
         Color[] colorMap = {
-                new Color(0, 0, 0, 0), // 0 background
-                new Color(153, 204, 255), // 1 wing
-                new Color(102, 178, 255), // 2 body
-                new Color(255, 255, 153), // 3 beak
-                new Color(0, 0, 0) // 4 eye/outline
+                null,
+                Palette.BIRD_1,
+                Palette.BIRD_2,
+                Palette.BIRD_3,
+                Palette.BIRD_4,
         };
 
         // ! Changed to 8x8 bird sprite
@@ -308,14 +436,14 @@ public class Main extends JPanel {
 
         int frame = 0;
         int pixelSize = 8; // ขยาย pixel ให้ชัด (ลองปรับได้)
-        int offsetX = 50, offsetY = 50; // ตำแหน่งวาง sprite
+        int offsetX = 400, offsetY =400; // ตำแหน่งวาง sprite
 
         Color[] colorMap = {
-                new Color(0, 0, 0, 0), // 0 background
-                new Color(153, 204, 255), // 1 around
-                new Color(102, 178, 255), // 2 body
-                new Color(255, 255, 153), // 3 shadow
-                new Color(0, 0, 0) // 4 eye/outline
+                null,
+                Palette.SLIME_1,
+                Palette.SLIME_2,
+                Palette.SLIME_3,
+                Palette.SLIME_4,
         };
 
         // ! Changed to 8x8 slime sprite
@@ -323,21 +451,21 @@ public class Main extends JPanel {
                 { // Frame 1
                         { 0, 0, 0, 0, 0, 0, 0, 0 },
                         { 0, 1, 1, 1, 1, 1, 1, 1 },
-                        { 0, 1, 0, 0, 0, 0, 0, 0 },
-                        { 0, 1, 0, 0, 0, 0, 0, 0 },
-                        { 0, 1, 0, 0, 0, 0, 0, 0 },
-                        { 0, 1, 0, 0, 0, 0, 0, 0 },
-                        { 0, 1, 0, 0, 0, 0, 0, 0 },
-                        { 0, 1, 1, 1, 1, 1, 0, 0 },
+                        { 0, 1, 3, 2, 2, 2, 2, 1 },
+                        { 0, 1, 2, 4, 2, 3, 4, 1 },
+                        { 0, 1, 2, 2, 2, 2, 2, 1 },
+                        { 0, 1, 2, 3, 4, 4, 2, 1 },
+                        { 0, 1, 3, 2, 2, 2, 3, 1 },
+                        { 0, 1, 1, 1, 1, 1, 1, 1 },
                 },
                 { // Frame 2
-                        { 0, 0, 0, 0, 0, 0, 0, 0 },
-                        { 0, 0, 0, 0, 0, 0, 0, 0 },
-                        { 0, 0, 0, 0, 0, 0, 0, 0 },
-                        { 0, 0, 0, 0, 0, 0, 0, 0 },
-                        { 0, 0, 0, 0, 0, 0, 0, 0 },
-                        { 0, 0, 0, 0, 0, 0, 0, 0 },
-                        { 0, 0, 0, 0, 0, 0, 0, 0 },
+                        { 0, 1, 1, 1, 1, 1, 1, 1 },
+                        { 0, 1, 3, 2, 2, 2, 3, 1 },
+                        { 0, 1, 2, 4, 2, 2, 4, 1 },
+                        { 0, 1, 2, 2, 2, 2, 2, 1 },
+                        { 0, 1, 2, 3, 4, 4, 2, 1 },
+                        { 0, 1, 3, 2, 2, 2, 3, 1 },
+                        { 0, 1, 1, 1, 1, 1, 1, 1 },
                         { 0, 0, 0, 0, 0, 0, 0, 0 },
                 }
 
@@ -350,7 +478,7 @@ public class Main extends JPanel {
         }
 
         private void startAnimation() {
-            new Timer(100, e -> {
+            new Timer(300, e -> {
                 frame += direction;
 
                 // ถ้าถึงเฟรมสุดท้าย -> สลับเป็นถอยหลัง
@@ -366,7 +494,7 @@ public class Main extends JPanel {
             }).start();
         }
 
-        public void drawBird(Graphics g) {
+        public void drawSlime(Graphics g) {
             // ! Draw a pixel per pixel
             for (int i = 0; i < slime[frame].length; i++) { // loop row ของ frame ปัจจุบัน
                 for (int j = 0; j < slime[frame][i].length; j++) { // loop column
@@ -380,114 +508,6 @@ public class Main extends JPanel {
 
         }
 
-    }
-    // ? ================================================
-    // ? Draw a Line
-    // ? ================================================
-    public void drawLine(Graphics g, int x1, int y1, int x2, int y2, int thickness) {
-        int dx = Math.abs(x2 - x1), dy = Math.abs(y2 - y1);
-        int sx = x1 < x2 ? 1 : -1;
-        int sy = y1 < y2 ? 1 : -1;
-        int err = dx - dy;
-
-        while (true) {
-            putPixel(g, x1, y1, thickness);
-            if (x1 == x2 && y1 == y2)
-                break;
-            int e2 = 2 * err;
-            if (e2 > -dy) {
-                err -= dy;
-                x1 += sx;
-            }
-            if (e2 < dx) {
-                err += dx;
-                y1 += sy;
-            }
-        }
-    }
-
-    // ? ================================================
-    // ? Draw a Triangle
-    // ? ================================================
-
-    public void drawTriangle(Graphics g, int x1, int y1, int x2, int y2, int x3,
-            int y3, int thickness) {
-        drawLine(g, x1, y1, x2, y2, thickness);
-        drawLine(g, x2, y2, x3, y3, thickness);
-        drawLine(g, x3, y3, x1, y1, thickness);
-    }
-
-    // ? ================================================
-    // ? Draw a Curve Line
-    // ? ================================================
-    public void drawBezier(Graphics g, int[] xPoints, int[] yPoints, int thickness) {
-        int n = xPoints.length - 1; // degree
-        for (double t = 0; t <= 1; t += 0.001) { // step เล็กๆ เพื่อ smooth curve
-            double x = 0, y = 0;
-            for (int i = 0; i <= n; i++) {
-                double coeff = binomial(n, i) * Math.pow(1 - t, n - i) * Math.pow(t, i);
-                x += coeff * xPoints[i];
-                y += coeff * yPoints[i];
-            }
-            putPixel(g, (int) Math.round(x), (int) Math.round(y), thickness);
-        }
-    }
-
-    private int binomial(int n, int k) {
-        int res = 1;
-        for (int i = 1; i <= k; i++) {
-            res = res * (n - i + 1) / i;
-        }
-        return res;
-    }
-    //* */
-
-    // * ================================================
-    // * Palette
-    // * ================================================
-    class Palette{
-
-        //* Dirt
-        public static final Color DIRT_1 = Color.decode("#ead0a8");
-        public static final Color DIRT_2 = Color.decode("#b69f66");
-        public static final Color DIRT_3 = Color.decode("#6b5428");
-        public static final Color DIRT_4 = Color.decode("#76552b");
-        public static final Color DIRT_5 = Color.decode("#402905");
-    }
-
-    // * ================================================
-    // * Component
-    // * ================================================
-
-    class Sky{
-
-    }
-
-    // ! ================================================
-    // ! GROUND
-    // ! ================================================
-    class Ground {
-        int baseY = getHeight()-100;
-
-        Random random = new Random();
-
-        public Ground() {
-
-        }
-
-        public void drawGround(Graphics g) {
-            
-            g.setColor(Palette.DIRT_5);
-            drawRect(g, 0, getHeight()-100, getWidth(), 100);
-
-            // drawRect(g, 10, getHeight() - 90, getWidth() - 20, 80);
-            // g.setColor(Color.RED);
-            // drawRect(g, 20, getHeight() - 80, getWidth() - 40, 60);
-        }
-
-        private void detailDirt(Graphics g){
-
-        }
     }
 
     public static void main(String[] args) {
