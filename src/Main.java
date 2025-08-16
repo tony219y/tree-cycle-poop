@@ -322,7 +322,7 @@ public class Main extends JPanel {
 
         public void drawGround(Graphics g) {
             drawRect(g, 0, getHeight() - 100, getWidth(), 100);
-            g.setColor(Color.GRAY);
+            g.setColor(Color.black);
             drawRect(g, 10, getHeight() - 90, getWidth()-20, 80);
         }
     }
