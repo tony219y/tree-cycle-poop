@@ -1,4 +1,6 @@
 import java.awt.*;
+import java.util.Random;
+
 import javax.swing.*;
 
 public class Main extends JPanel {
@@ -18,8 +20,7 @@ public class Main extends JPanel {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
 
-        g2d.setColor(Color.BLACK);
-        ground.drawGround(g);
+        ground.drawGround(g2d);
         bird.drawBird(g);
 
         // * Make a Rectangle
@@ -334,10 +335,10 @@ public class Main extends JPanel {
     // ? ================================================
 
     public void drawTriangle(Graphics g, int x1, int y1, int x2, int y2, int x3,
-    int y3, int thickness) {
-    drawLine(g, x1, y1, x2, y2, thickness);
-    drawLine(g, x2, y2, x3, y3, thickness);
-    drawLine(g, x3, y3, x1, y1, thickness);
+            int y3, int thickness) {
+        drawLine(g, x1, y1, x2, y2, thickness);
+        drawLine(g, x2, y2, x3, y3, thickness);
+        drawLine(g, x3, y3, x1, y1, thickness);
     }
 
     // ? ================================================
@@ -363,22 +364,53 @@ public class Main extends JPanel {
         }
         return res;
     }
+    //* */
+
+    // * ================================================
+    // * Palette
+    // * ================================================
+    class Palette{
+
+        //* Dirt
+        public static final Color DIRT_1 = Color.decode("#ead0a8");
+        public static final Color DIRT_2 = Color.decode("#b69f66");
+        public static final Color DIRT_3 = Color.decode("#6b5428");
+        public static final Color DIRT_4 = Color.decode("#76552b");
+        public static final Color DIRT_5 = Color.decode("#402905");
+    }
+
+    // * ================================================
+    // * Component
+    // * ================================================
+
+    class Sky{
+
+    }
 
     // ! ================================================
     // ! GROUND
     // ! ================================================
     class Ground {
-        // TODO : Wait for Implement
+        int baseY = getHeight()-100;
+
+        Random random = new Random();
+
         public Ground() {
 
         }
 
         public void drawGround(Graphics g) {
-            drawRect(g, 0, getHeight() - 100, getWidth(), 100);
-            g.setColor(Color.gray);
-            drawRect(g, 10, getHeight() - 90, getWidth() - 20, 80);
-            g.setColor(Color.RED);
-            drawRect(g, 20, getHeight() - 80, getWidth() - 40, 60);
+            
+            g.setColor(Palette.DIRT_5);
+            drawRect(g, 0, getHeight()-100, getWidth(), 100);
+
+            // drawRect(g, 10, getHeight() - 90, getWidth() - 20, 80);
+            // g.setColor(Color.RED);
+            // drawRect(g, 20, getHeight() - 80, getWidth() - 40, 60);
+        }
+
+        private void detailDirt(Graphics g){
+
         }
     }
 
