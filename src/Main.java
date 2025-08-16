@@ -58,13 +58,13 @@ public class Main extends JPanel {
         startAnimation();
     }
 
-    private void startAnimation() {
-        //! Example run a frame
-        // new Timer(300, e -> { // ทุก 300ms
-        //     frame = 1 - frame; // สลับ 0 ↔ 1
-        //     repaint();
-        // }).start();
-    }
+    // private void startAnimation() {
+    //     //! Example run a frame
+    //     // new Timer(300, e -> { // ทุก 300ms
+    //     //     frame = 1 - frame; // สลับ 0 ↔ 1
+    //     //     repaint();
+    //     // }).start();
+    // }
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -76,15 +76,15 @@ public class Main extends JPanel {
 
 
         //! Draw a pixel per pixel
-        // for (int i = 0; i < sprite[frame].length; i++) { // loop row ของ frame ปัจจุบัน
-        //     for (int j = 0; j < sprite[frame][i].length; j++) { // loop column
-        //         int colorIndex = sprite[frame][i][j];
-        //         if (colorIndex == 0)
-        //             continue; // 0 = background
-        //         g.setColor(colorMap[colorIndex]);
-        //         putPixel(g, offsetX + j * pixelSize, offsetY + i * pixelSize, pixelSize);
-        //     }
-        // }
+        for (int i = 0; i < sprite[frame].length; i++) { // loop row ของ frame ปัจจุบัน
+            for (int j = 0; j < sprite[frame][i].length; j++) { // loop column
+                int colorIndex = sprite[frame][i][j];
+                if (colorIndex == 0)
+                    continue; // 0 = background
+                g.setColor(colorMap[colorIndex]);
+                putPixel(g, offsetX + j * pixelSize, offsetY + i * pixelSize, pixelSize);
+            }
+        }
 
         // * Make a Rectangle
         // drawRect(g, 0, getHeight() - 100, 600, 100);
@@ -94,8 +94,8 @@ public class Main extends JPanel {
         // drawCircle(g, getWidth() - 100, 100, 50);
 
         // * Make a Ellipse
-        g.setColor(Color.BLUE);
-        drawEllipse(g, 100, 100, 50, 100);
+        //g.setColor(Color.BLUE);
+        //drawEllipse(g, 100, 100, 50, 100);
 
         // * Make a Line
         // g.setColor(Color.GRAY);
@@ -190,67 +190,156 @@ public class Main extends JPanel {
     // ? ================================================
     // ? Draw a Ellipse
     // ? ================================================
-    public void drawEllipse(Graphics g, int xc, int yc, int rx, int ry) {
-        // Draw Ellipse (Midpoint Ellipse Algorithm)
-        int x = 0, y = ry;
-        int rx2 = rx * rx, ry2 = ry * ry;
-        int tworx2 = 2 * rx2, twory2 = 2 * ry2;
-        int px = 0, py = tworx2 * y;
+    // public void drawEllipse(Graphics g, int xc, int yc, int rx, int ry) {
+    //     // Draw Ellipse (Midpoint Ellipse Algorithm)
+    //     int x = 0, y = ry;
+    //     int rx2 = rx * rx, ry2 = ry * ry;
+    //     int tworx2 = 2 * rx2, twory2 = 2 * ry2;
+    //     int px = 0, py = tworx2 * y;
 
-        putPixel(g, xc + x, yc + y, 1);
-        putPixel(g, xc - x, yc + y, 1);
-        putPixel(g, xc + x, yc - y, 1);
-        putPixel(g, xc - x, yc - y, 1);
+    //     putPixel(g, xc + x, yc + y, 1);
+    //     putPixel(g, xc - x, yc + y, 1);
+    //     putPixel(g, xc + x, yc - y, 1);
+    //     putPixel(g, xc - x, yc - y, 1);
 
-        // Region 1
-        int p = (int) (ry2 - (rx2 * ry) + (0.25 * rx2));
-        while (px < py) {
-            x++;
-            px += twory2;
-            if (p < 0) {
-                p += ry2 + px;
-            } else {
-                y--;
-                py -= tworx2;
-                p += ry2 + px - py;
-            }
+    //     // Region 1
+    //     int p = (int) (ry2 - (rx2 * ry) + (0.25 * rx2));
+    //     while (px < py) {
+    //         x++;
+    //         px += twory2;
+    //         if (p < 0) {
+    //             p += ry2 + px;
+    //         } else {
+    //             y--;
+    //             py -= tworx2;
+    //             p += ry2 + px - py;
+    //         }
 
-            // ! FILL A COLOR
-            drawHLine(g, xc - x, xc + x, yc + y, 1);
-            drawHLine(g, xc - x, xc + x, yc - y, 1);
+    //         // ! FILL A COLOR
+    //         drawHLine(g, xc - x, xc + x, yc + y, 1);
+    //         drawHLine(g, xc - x, xc + x, yc - y, 1);
 
-            // ! JUST DRAW A SINGLE PIXEL
-            // putPixel(g, xc + x, yc + y);
-            // putPixel(g, xc - x, yc + y);
-            // putPixel(g, xc + x, yc - y);
-            // putPixel(g, xc - x, yc - y);
+    //         // ! JUST DRAW A SINGLE PIXEL
+    //         // putPixel(g, xc + x, yc + y);
+    //         // putPixel(g, xc - x, yc + y);
+    //         // putPixel(g, xc + x, yc - y);
+    //         // putPixel(g, xc - x, yc - y);
+    //     }
+
+    //     // Region 2
+    //     p = (int) (ry2 * (x + 0.5) * (x + 0.5) + rx2 * (y - 1) * (y - 1) - rx2 * ry2);
+    //     while (y > 0) {
+    //         y--;
+    //         py -= tworx2;
+    //         if (p > 0) {
+    //             p += rx2 - py;
+    //         } else {
+    //             x++;
+    //             px += twory2;
+    //             p += rx2 - py + px;
+    //         }
+
+    //         // ! JUST DRAW A SINGLE PIXEL
+    //         // putPixel(g, xc + x, yc + y);
+    //         // putPixel(g, xc - x, yc + y);
+    //         // putPixel(g, xc + x, yc - y);
+    //         // putPixel(g, xc - x, yc - y);
+
+    //         // ! FILL A COLOR
+    //         drawHLine(g, xc - x, xc + x, yc + y, 1);
+    //         drawHLine(g, xc - x, xc + x, yc - y, 1);
+    //     }
+
+    // }
+    // ? ================================================
+    // ? Draw a bird
+    // ? ================================================
+int frame = 0;
+int pixelSize = 8; // ขยาย pixel ให้ชัด (ลองปรับได้)
+int offsetX = 50, offsetY = 50; // ตำแหน่งวาง sprite
+
+Color[] colorMap = {
+        new Color(0,0,0,0),   // 0 background
+        new Color(153,204,255),   // 1 wing
+        new Color(102,178,255),  // 2 body 
+        new Color(255,255,153),  // 3 beak
+        new Color(0,0,0)    // 4 eye/outline
+};
+
+//! Changed to 8x8 bird sprite
+int[][][] sprite = {
+        { // Frame 1
+                {0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0},
+                {0,1,1,0,2,2,2,0},
+                {0,0,1,1,2,4,2,0},
+                {2,2,2,1,1,2,2,3},
+                {0,0,2,2,2,2,2,0},
+                {0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0},
+        },
+        { // Frame 2
+                {0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0},
+                {0,0,0,0,2,2,2,0},
+                {0,1,1,1,2,4,2,0},
+                {2,2,1,1,1,2,2,3},
+                {0,0,2,2,2,2,2,0},
+                {0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0},
+        },
+        { // Frame 3
+                {0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0},
+                {0,0,0,0,2,2,2,0},
+                {0,0,1,1,2,4,2,0},
+                {2,1,1,1,1,2,2,3},
+                {0,0,2,2,2,2,2,0},
+                {0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0},
+        },
+        { // Frame 4
+                {0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0},
+                {0,0,0,0,2,2,2,0},
+                {0,0,2,2,2,4,2,0},
+                {2,2,2,1,1,2,2,3},
+                {0,0,1,1,1,2,2,0},
+                {0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0},
+        },
+        { // Frame 5
+                {0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0},
+                {0,0,0,0,2,2,2,0},
+                {0,0,2,2,2,4,2,0},
+                {2,2,2,2,1,2,2,3},
+                {0,0,2,1,1,2,2,0},
+                {0,0,1,1,0,0,0,0},
+                {0,0,0,0,0,0,0,0},
+        }
+        
+};
+    int direction = 1; // 1 = ไปข้างหน้า, -1 = ย้อนกลับ
+
+private void startAnimation() {
+    new Timer(100, e -> {
+        frame += direction;
+
+        // ถ้าถึงเฟรมสุดท้าย -> สลับเป็นถอยหลัง
+        if (frame == sprite.length - 1) {
+            direction = -1;
+        }
+        // ถ้าถึงเฟรมแรก -> สลับเป็นเดินหน้า
+        else if (frame == 0) {
+            direction = 1;
         }
 
-        // Region 2
-        p = (int) (ry2 * (x + 0.5) * (x + 0.5) + rx2 * (y - 1) * (y - 1) - rx2 * ry2);
-        while (y > 0) {
-            y--;
-            py -= tworx2;
-            if (p > 0) {
-                p += rx2 - py;
-            } else {
-                x++;
-                px += twory2;
-                p += rx2 - py + px;
-            }
+        repaint();
+    }).start();
+}
+    
 
-            // ! JUST DRAW A SINGLE PIXEL
-            // putPixel(g, xc + x, yc + y);
-            // putPixel(g, xc - x, yc + y);
-            // putPixel(g, xc + x, yc - y);
-            // putPixel(g, xc - x, yc - y);
-
-            // ! FILL A COLOR
-            drawHLine(g, xc - x, xc + x, yc + y, 1);
-            drawHLine(g, xc - x, xc + x, yc - y, 1);
-        }
-
-    }
 
     // ? ================================================
     // ? Draw a Line
@@ -281,11 +370,11 @@ public class Main extends JPanel {
     // ? Draw a Triangle
     // ? ================================================
 
-    public void drawTriangle(Graphics g, int x1, int y1, int x2, int y2, int x3, int y3, int thickness) {
-        drawLine(g, x1, y1, x2, y2, thickness);
-        drawLine(g, x2, y2, x3, y3, thickness);
-        drawLine(g, x3, y3, x1, y1, thickness);
-    }
+    // public void drawTriangle(Graphics g, int x1, int y1, int x2, int y2, int x3, int y3, int thickness) {
+    //     drawLine(g, x1, y1, x2, y2, thickness);
+    //     drawLine(g, x2, y2, x3, y3, thickness);
+    //     drawLine(g, x3, y3, x1, y1, thickness);
+    // }
 
     // ? ================================================
     // ? Draw a Curve Line
