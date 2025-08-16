@@ -9,16 +9,14 @@ public class AnimationController extends JPanel {
 	private Ground ground;
 
 	public AnimationController() {
-		setPreferredSize(new Dimension(800, 600)); // ขนาดเริ่มต้นของแคนวาส
+		setPreferredSize(new Dimension(600, 600)); // ขนาดเริ่มต้นของแคนวาส
 		initializeComponents();
 	}
 
-	// เตรียมออบเจ็กต์ที่ใช้ในฉาก
 	private void initializeComponents() {
 		ground = new Ground();
 	}
 
-	// เริ่มแอนิเมชัน: ให้ Ground อัปเดตสถานะและเรียก repaint ของเราเป็นระยะ
 	public void startAnimation() {
 		ground.startAnimation(this::repaint);
 	}
