@@ -19,7 +19,8 @@ public class Main extends JPanel {
             if (bird.offsetX < 350) {
                 bird.offsetX += 5; // move speed
             }else if (bird.offsetX >= 350) {
-                plane.setFrame(1); // index 1 = Frame 2
+                plane.setFrame(1);// index 1 = Frame 2
+                slime.visible=true;
             }
 
             repaint();
@@ -447,7 +448,8 @@ public class Main extends JPanel {
     // ? Draw a Slime
     // ? ================================================
     class Slime {
-
+        
+        public boolean visible = false;
         int frame = 0;
         int pixelSize = 8; // ขยาย pixel ให้ชัด (ลองปรับได้)
         int offsetX = 400, offsetY = 400; // ตำแหน่งวาง sprite
@@ -484,7 +486,7 @@ public class Main extends JPanel {
                 }
 
         };
-
+        
         int direction = 1; // 1 = ไปข้างหน้า, -1 = ย้อนกลับ
 
         public Slime() {
@@ -509,6 +511,7 @@ public class Main extends JPanel {
         }
 
         public void drawSlime(Graphics g) {
+            if (!visible) return;// don't draw until visible
             // ! Draw a pixel per pixel
             for (int i = 0; i < slime[frame].length; i++) { // loop row ของ frame ปัจจุบัน
                 for (int j = 0; j < slime[frame][i].length; j++) { // loop column
