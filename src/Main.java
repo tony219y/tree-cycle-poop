@@ -324,6 +324,8 @@ public class Main extends JPanel {
             drawRect(g, 0, getHeight() - 100, getWidth(), 100);
             g.setColor(Color.black);
             drawRect(g, 10, getHeight() - 90, getWidth()-20, 80);
+            g.setColor(Color.GREEN);
+            drawRect(g, 20, getHeight() - 80, getWidth()-40, 60);
         }
     }
     
