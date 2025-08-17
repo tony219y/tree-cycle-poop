@@ -1,4 +1,6 @@
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import javax.swing.*;
@@ -18,9 +20,8 @@ public class Main extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        Graphics2D g2d = (Graphics2D) g;
 
-        ground.drawGround(g2d);
+        ground.drawGround(g);
         bird.drawBird(g);
 
         // * Make a Rectangle
@@ -269,7 +270,7 @@ public class Main extends JPanel {
         }
 
         private void startAnimation() {
-            new Timer(100, e -> {
+            new Timer(100, _ -> {
                 frame += direction;
 
                 // ถ้าถึงเฟรมสุดท้าย -> สลับเป็นถอยหลัง
@@ -364,53 +365,178 @@ public class Main extends JPanel {
         }
         return res;
     }
-    //* */
+    // * */
 
     // * ================================================
     // * Palette
     // * ================================================
-    class Palette{
+    class Palette {
 
-        //* Dirt
+        // * Dirt
         public static final Color DIRT_1 = Color.decode("#ead0a8");
         public static final Color DIRT_2 = Color.decode("#b69f66");
         public static final Color DIRT_3 = Color.decode("#6b5428");
         public static final Color DIRT_4 = Color.decode("#76552b");
         public static final Color DIRT_5 = Color.decode("#402905");
+
+        // * Grass
+        public static final Color GRASS_1 = Color.decode("#136d15");
+        public static final Color GRASS_2 = Color.decode("#117c13");
+
+        // * Sky
+        public static final Color SKY_1 = Color.decode("#9ee0f9");
+
     }
 
     // * ================================================
     // * Component
     // * ================================================
 
-    class Sky{
+    // ! ================================================
+    // ! Cloud
+    // ! ================================================
+    class Cloud {
+        public Cloud() {
 
+        }
+
+        public void drawCloud(Graphics g) {
+            g.setColor(Color.WHITE);
+
+            drawEllipse(g, 150, 60, 100, 20);
+            drawEllipse(g, 300, 100, 100, 20);
+        }
+    }
+
+    // ! ================================================
+    // ! SKY
+    // ! ================================================
+    class Sky {
+        private Cloud cloud;
+
+        public Sky() {
+            cloud = new Cloud();
+        }
+
+        public void drawSky(Graphics g) {
+
+            g.setColor(Palette.SKY_1);
+            drawRect(g, 0, 0, getWidth(), getHeight());
+
+            cloud.drawCloud(g);
+        }
     }
 
     // ! ================================================
     // ! GROUND
     // ! ================================================
     class Ground {
-        int baseY = getHeight()-100;
+        private Tree tree;
+        private Sky sky;
 
         Random random = new Random();
+        List<Rock> rock = new ArrayList<>();
 
         public Ground() {
-
+            tree = new Tree();
+            sky = new Sky();
+            detailDirt();
         }
 
         public void drawGround(Graphics g) {
-            
-            g.setColor(Palette.DIRT_5);
-            drawRect(g, 0, getHeight()-100, getWidth(), 100);
+            // Sky
+            sky.drawSky(g);
 
-            // drawRect(g, 10, getHeight() - 90, getWidth() - 20, 80);
-            // g.setColor(Color.RED);
-            // drawRect(g, 20, getHeight() - 80, getWidth() - 40, 60);
+            // Dirt
+            g.setColor(Palette.DIRT_5);
+            drawRect(g, 0, getHeight() - 100, getWidth(), 100);
+
+            tree.drawTree(g, 100);
+            tree.drawTree(g, 300);
+
+            // Grass
+            g.setColor(Palette.GRASS_1);
+            drawRect(g, 0, getHeight() - 105, getWidth(), 20);
+
+            for (Rock grass : rock) {
+                g.setColor(Palette.GRASS_1);
+                drawCircle(g, grass.x, getHeight() - 110, grass.size);
+                g.setColor(Palette.GRASS_2);
+                drawCircle(g, grass.x, getHeight() - 100, grass.size);
+            }
+
+            for (Rock rocks : rock) {
+                g.setColor(rocks.color);
+                drawCircle(g, rocks.x, rocks.y, rocks.size);
+                g.setColor(Color.gray);
+                drawCircle(g, rocks.x, rocks.y - 5, rocks.size - 2);
+            }
+
         }
 
-        private void detailDirt(Graphics g){
+        private void detailDirt() {
+            rock.clear();
+            for (int i = 0; i < 100; i++) {
+                int x = random.nextInt(600);
+                int y = 500 + random.nextInt(80); // Within ground area
+                int size = random.nextInt(8) + 3;
 
+                // Randomly choose a dirt color for variation
+                Color[] dirtColors = { Palette.DIRT_3, Palette.DIRT_4 };
+
+                rock.add(new Rock(x, y, size, dirtColors[random.nextInt(dirtColors.length)]));
+            }
+        }
+
+        // ! ================================================
+        // ! ROCK
+        // ! ================================================
+        class Rock {
+            int x, y, size;
+            Color color;
+
+            Rock(int x, int y, int size, Color color) {
+                this.x = x;
+                this.y = y;
+                this.size = size;
+                this.color = color;
+            }
+        }
+        // ! ================================================
+        // ! TREE
+        // ! ================================================
+
+        class Tree {
+
+            Tree() {
+
+            }
+
+            public void drawTree(Graphics g, int positionX) {
+                // Tree trunk (ลำต้น)
+                g.setColor(Palette.DIRT_4);
+                drawRect(g, positionX, getHeight() - 220, 12, 120); // body
+
+                // Tree branches (กิ่งไม้)
+                drawLine(g, positionX, 420, positionX - 26, 380, 4); // left branch
+                drawLine(g, positionX + 10, 400, positionX + 58, 350, 4); // right branch
+
+                // Tree leaves (ใบไม้)
+                g.setColor(Palette.GRASS_1);
+                drawCircle(g, positionX - 26, 380, 25); // left leaf cluster
+                g.setColor(Palette.GRASS_2);
+                drawCircle(g, positionX - 26, 380, 15);
+
+                g.setColor(Palette.GRASS_1);
+                drawCircle(g, positionX + 58, 350, 25); // right leaf cluster
+                g.setColor(Palette.GRASS_2);
+                drawCircle(g, positionX + 58, 350, 15);
+
+                g.setColor(Palette.GRASS_1);
+                drawCircle(g, positionX + 6, getHeight() - 225, 40); // main crown
+                g.setColor(Palette.GRASS_2);
+                drawCircle(g, positionX + 6, getHeight() - 225, 30);
+            }
         }
     }
 
