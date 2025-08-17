@@ -9,12 +9,24 @@ public class Main extends JPanel {
 
     private Ground ground;
     private Bird bird;
+    private Slime slime;
+    private Plane plane;
 
     // ! Main Constructors
     public Main() {
         setPreferredSize(new Dimension(600, 600));
         initializeComponents();
 
+        new Timer(100, e -> {
+            if (bird.offsetX < 350) {
+                bird.offsetX += 5; // move speed
+            }else if (bird.offsetX >= 350) {
+                plane.setFrame(1);// index 1 = Frame 2
+                slime.visible=true;
+            }
+
+            repaint();
+        }).start();
     }
 
     @Override
@@ -23,6 +35,8 @@ public class Main extends JPanel {
 
         ground.drawGround(g);
         bird.drawBird(g);
+        slime.drawSlime(g);
+        plane.drawPlane(g);
 
         // * Make a Rectangle
         // drawRect(g, 0, getHeight() - 100, 600, 100);
@@ -59,6 +73,8 @@ public class Main extends JPanel {
     private void initializeComponents() {
         ground = new Ground();
         bird = new Bird();
+        slime = new Slime();
+        plane = new Plane();
     }
 
     // * ================================================
@@ -270,7 +286,7 @@ public class Main extends JPanel {
         }
 
         private void startAnimation() {
-            new Timer(100, _ -> {
+            new Timer(100, e -> {
                 frame += direction;
 
                 // ถ้าถึงเฟรมสุดท้าย -> สลับเป็นถอยหลัง
@@ -386,6 +402,23 @@ public class Main extends JPanel {
         // * Sky
         public static final Color SKY_1 = Color.decode("#9ee0f9");
 
+
+        // * Bird
+        public static final Color BIRD_1 = Color.decode("#99ccff");
+        public static final Color BIRD_2 = Color.decode("#66b2ff");
+        public static final Color BIRD_3 = Color.decode("#ffff99");
+        public static final Color BIRD_4 = Color.decode("#000000");
+        // * Slime
+        public static final Color SLIME_1 = Color.decode("#009900");
+        public static final Color SLIME_2 = Color.decode("#66ff66");
+        public static final Color SLIME_3 = Color.decode("#8cff9d");
+        public static final Color SLIME_4 = Color.decode("#000000");
+        // * Plane
+        public static final Color PLANE_1 = Color.decode("#ffffff");
+        public static final Color PLANE_2 = Color.decode("#99ccff");
+        public static final Color PLANE_3 = Color.decode("#585858");
+        public static final Color PLANE_4 = Color.decode("#ff3b3b");
+        public static final Color PLANE_5 = Color.decode("#66b2ff");
     }
 
     // * ================================================
@@ -449,6 +482,7 @@ public class Main extends JPanel {
 
             // Dirt
             g.setColor(Palette.DIRT_5);
+            drawRect(g, 0, getHeight() - 100, getWidth(), 100);
             drawRect(g, 0, getHeight() - 100, getWidth(), 100);
 
             tree.drawTree(g, 100);
@@ -538,6 +572,177 @@ public class Main extends JPanel {
                 drawCircle(g, positionX + 6, getHeight() - 225, 30);
             }
         }
+    }
+
+    // ? ================================================
+    // ? Draw a Slime
+    // ? ================================================
+    class Slime {
+        
+        public boolean visible = false;
+        int frame = 0;
+        int pixelSize = 8; // ขยาย pixel ให้ชัด (ลองปรับได้)
+        int offsetX = 400, offsetY = 400; // ตำแหน่งวาง sprite
+
+        Color[] colorMap = {
+                null,
+                Palette.SLIME_1,
+                Palette.SLIME_2,
+                Palette.SLIME_3,
+                Palette.SLIME_4,
+        };
+
+        // ! Changed to 8x8 slime sprite
+        int[][][] slime = {
+                { // Frame 1
+                        { 0, 0, 0, 0, 0, 0, 0, 0 },
+                        { 0, 1, 1, 1, 1, 1, 1, 1 },
+                        { 0, 1, 3, 2, 2, 2, 2, 1 },
+                        { 0, 1, 2, 4, 2, 3, 4, 1 },
+                        { 0, 1, 2, 2, 2, 2, 2, 1 },
+                        { 0, 1, 2, 3, 4, 4, 2, 1 },
+                        { 0, 1, 3, 2, 2, 2, 3, 1 },
+                        { 0, 1, 1, 1, 1, 1, 1, 1 },
+                },
+                { // Frame 2
+                        { 0, 1, 1, 1, 1, 1, 1, 1 },
+                        { 0, 1, 3, 2, 2, 2, 3, 1 },
+                        { 0, 1, 2, 4, 2, 2, 4, 1 },
+                        { 0, 1, 2, 2, 2, 2, 2, 1 },
+                        { 0, 1, 2, 3, 4, 4, 2, 1 },
+                        { 0, 1, 3, 2, 2, 2, 3, 1 },
+                        { 0, 1, 1, 1, 1, 1, 1, 1 },
+                        { 0, 0, 0, 0, 0, 0, 0, 0 },
+                }
+
+        };
+        
+        int direction = 1; // 1 = ไปข้างหน้า, -1 = ย้อนกลับ
+
+        public Slime() {
+            startAnimation();
+        }
+
+        private void startAnimation() {
+            new Timer(300, e -> {
+                frame += direction;
+
+                // ถ้าถึงเฟรมสุดท้าย -> สลับเป็นถอยหลัง
+                if (frame == slime.length - 1) {
+                    direction = -1;
+                }
+                // ถ้าถึงเฟรมแรก -> สลับเป็นเดินหน้า
+                else if (frame == 0) {
+                    direction = 1;
+                }
+
+                repaint();
+            }).start();
+        }
+
+        public void drawSlime(Graphics g) {
+            if (!visible) return;// don't draw until visible
+            // ! Draw a pixel per pixel
+            for (int i = 0; i < slime[frame].length; i++) { // loop row ของ frame ปัจจุบัน
+                for (int j = 0; j < slime[frame][i].length; j++) { // loop column
+                    int colorIndex = slime[frame][i][j];
+                    if (colorIndex == 0)
+                        continue; // 0 = background
+                    g.setColor(colorMap[colorIndex]);
+                    putPixel(g, offsetX + j * pixelSize, offsetY + i * pixelSize, pixelSize);
+                }
+            }
+
+        }
+
+    }
+
+    // ? ================================================
+    // ? Draw a Plane
+    // ? ================================================
+    class Plane {
+
+        int frame = 0;
+        int pixelSize = 30; // ขยาย pixel ให้ชัด (ลองปรับได้)
+        int offsetX = 400, offsetY = 0; // ตำแหน่งวาง sprite
+
+        Color[] colorMap = {
+                null,
+                Palette.PLANE_1,
+                Palette.PLANE_2,
+                Palette.PLANE_3,
+                Palette.PLANE_4,
+                Palette.PLANE_5,
+        };
+
+        // ! Changed to 8x8 plane sprite
+        int[][][] plane = {
+                { // Frame 1
+                        { 0, 0, 0, 0, 0, 0, 0, 0 },
+                        { 0, 0, 0, 0, 0, 0, 0, 0 },
+                        { 0, 0, 1, 1, 1, 1, 1, 1 },
+                        { 0, 1, 2, 2, 1, 1, 1, 1 },
+                        { 1, 2, 2, 2, 1, 3, 3, 3 },
+                        { 1, 1, 1, 1, 1, 1, 1, 1 },
+                        { 0, 0, 0, 0, 0, 0, 0, 0 },
+                        { 0, 0, 0, 0, 0, 0, 0, 0 },
+                },
+                { // Frame 2
+                        { 0, 0, 0, 0, 0, 0, 0, 0 },
+                        { 0, 0, 0, 0, 0, 0, 0, 0 },
+                        { 0, 0, 1, 1, 1, 1, 1, 1 },
+                        { 0, 4, 2, 2, 1, 1, 1, 1 },
+                        { 4, 2, 2, 2, 1, 3, 3, 3 },
+                        { 1, 1, 1, 1, 1, 1, 1, 1 },
+                        { 0, 0, 0, 0, 0, 0, 0, 0 },
+                        { 0, 0, 0, 0, 0, 0, 0, 0 },
+                }
+
+        };
+
+        int direction = 1; // 1 = ไปข้างหน้า, -1 = ย้อนกลับ
+
+        public Plane() {
+            // startAnimation();
+        }
+
+        public void setFrame(int frame) {
+            if (frame >= 0 && frame < plane.length) {
+                this.frame = frame;
+            }
+        }
+
+        private void startAnimation() {
+            new Timer(300, e -> {
+                frame += direction;
+
+                // ถ้าถึงเฟรมสุดท้าย -> สลับเป็นถอยหลัง
+                if (frame == plane.length - 1) {
+                    direction = -1;
+                }
+                // ถ้าถึงเฟรมแรก -> สลับเป็นเดินหน้า
+                else if (frame == 0) {
+                    direction = 1;
+                }
+
+                repaint();
+            }).start();
+        }
+
+        public void drawPlane(Graphics g) {
+            // ! Draw a pixel per pixel
+            for (int i = 0; i < plane[frame].length; i++) { // loop row ของ frame ปัจจุบัน
+                for (int j = 0; j < plane[frame][i].length; j++) { // loop column
+                    int colorIndex = plane[frame][i][j];
+                    if (colorIndex == 0)
+                        continue; // 0 = background
+                    g.setColor(colorMap[colorIndex]);
+                    putPixel(g, offsetX + j * pixelSize, offsetY + i * pixelSize, pixelSize);
+                }
+            }
+
+        }
+
     }
 
     public static void main(String[] args) {
