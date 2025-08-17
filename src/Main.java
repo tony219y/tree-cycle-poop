@@ -11,18 +11,40 @@ public class Main extends JPanel {
     private Bird bird;
     private Slime slime;
     private Plane plane;
+    private AnimationController animController; // เพิ่ม Animation Controller
 
     // ! Main Constructors
     public Main() {
         setPreferredSize(new Dimension(600, 600));
         initializeComponents();
 
-        new Timer(100, e -> {
-            if (bird.offsetX < 350) {
-                bird.offsetX += 5; // move speed
-            }else if (bird.offsetX >= 350) {
+        new Timer(17, _ -> {
+            // Update animation controller
+            animController.update();
+            
+            // Bird animation - controlled by AnimationController
+            if (animController.isBirdAnimationEnabled() && bird.offsetX < 350) {
+                bird.offsetX += 20; // move speed
+                if (bird.offsetX % 3 == 0) { 
+                    bird.offsetY += 1;
+                }
+            }
+            
+            // Plane animation - controlled by AnimationController
+            if (animController.isPlaneAnimationEnabled()) {
                 plane.setFrame(1);// index 1 = Frame 2
-                slime.visible=true;
+            }
+            
+            // Slime animation - controlled by AnimationController  
+            if (animController.isSlimeAnimationEnabled()) {
+                slime.visible = true;
+            }
+
+            // Cloud animation - controlled by AnimationController
+            if (animController.isCloudAnimationEnabled()) {
+                for (Cloud cloud : ground.sky.clouds) {
+                    cloud.updatePosition();
+                }
             }
 
             repaint();
@@ -75,6 +97,12 @@ public class Main extends JPanel {
         bird = new Bird();
         slime = new Slime();
         plane = new Plane();
+        animController = new AnimationController(); // สร้าง Animation Controller
+        
+        // กำหนด timing ของ animation แต่ละอัน
+        animController.setBirdPhase(0, 28);     // Bird เล่นจาก frame 0-300
+        animController.setPlanePhaseStart(28);   // Plane เริ่มเล่นที่ frame 300
+        animController.setSlimePhaseStart(30);   // Slime เริ่มเล่นที่ frame 300
     }
 
     // * ================================================
@@ -214,7 +242,7 @@ public class Main extends JPanel {
 
         int frame = 0;
         int pixelSize = 8; // ขยาย pixel ให้ชัด (ลองปรับได้)
-        int offsetX = 50, offsetY = 50; // ตำแหน่งวาง sprite
+        int offsetX = -200, offsetY = 50; // ตำแหน่งวาง sprite
 
         Color[] colorMap = {
                 new Color(0, 0, 0, 0), // 0 background
@@ -286,7 +314,7 @@ public class Main extends JPanel {
         }
 
         private void startAnimation() {
-            new Timer(100, e -> {
+            new Timer(10, _ -> {
                 frame += direction;
 
                 // ถ้าถึงเฟรมสุดท้าย -> สลับเป็นถอยหลัง
@@ -304,6 +332,9 @@ public class Main extends JPanel {
 
         public void drawBird(Graphics g) {
             // ! Draw a pixel per pixel
+            if (offsetX >= 350)
+                return;
+
             for (int i = 0; i < bird[frame].length; i++) { // loop row ของ frame ปัจจุบัน
                 for (int j = 0; j < bird[frame][i].length; j++) { // loop column
                     int colorIndex = bird[frame][i][j];
@@ -317,10 +348,6 @@ public class Main extends JPanel {
         }
 
     }
-
-    // ? ================================================
-    // ? Draw a Slime
-    // ? ================================================
 
     // ? ================================================
     // ? Draw a Line
@@ -402,7 +429,6 @@ public class Main extends JPanel {
         // * Sky
         public static final Color SKY_1 = Color.decode("#9ee0f9");
 
-
         // * Bird
         public static final Color BIRD_1 = Color.decode("#99ccff");
         public static final Color BIRD_2 = Color.decode("#66b2ff");
@@ -429,15 +455,41 @@ public class Main extends JPanel {
     // ! Cloud
     // ! ================================================
     class Cloud {
-        public Cloud() {
+        private int posX;
+        private int posY;
+        private int speed;
 
+        public Cloud(int startX, int startY, int cloudSpeed) {
+            this.posX = startX;
+            this.posY = startY;
+            this.speed = cloudSpeed;
         }
 
         public void drawCloud(Graphics g) {
             g.setColor(Color.WHITE);
 
-            drawEllipse(g, 150, 60, 100, 20);
-            drawEllipse(g, 300, 100, 100, 20);
+            // Create a fluffy cloud with multiple overlapping circles
+            // Main cloud body (larger circles)
+            drawEllipse(g, 50 + posX, posY, 60, 30); // Left main part
+            drawEllipse(g, 90 + posX, posY - 10, 70, 35); // Center main part
+            drawEllipse(g, 140 + posX, posY - 5, 65, 32); // Right main part
+
+            // Additional puffs to make it look more natural
+            drawEllipse(g, 30 + posX, posY + 15, 45, 25); // Left small puff
+            drawEllipse(g, 75 + posX, posY + 15, 50, 28); // Center bottom puff
+            drawEllipse(g, 125 + posX, posY + 18, 48, 25); // Right bottom puff
+            drawEllipse(g, 160 + posX, posY + 10, 40, 22); // Far right puff
+
+            // Top detail puffs
+            drawEllipse(g, 65 + posX, posY - 25, 35, 20); // Top left detail
+            drawEllipse(g, 110 + posX, posY - 30, 40, 22); // Top center detail
+        }
+
+        public void updatePosition() {
+            posX += speed;
+            if (posX > 800) { // Give more space before reset
+                posX = -300; // Reset further to the left
+            }
         }
     }
 
@@ -445,18 +497,25 @@ public class Main extends JPanel {
     // ! SKY
     // ! ================================================
     class Sky {
-        private Cloud cloud;
+        public List<Cloud> clouds; // Changed to list of clouds
 
         public Sky() {
-            cloud = new Cloud();
+            clouds = new ArrayList<>();
+            // Create multiple clouds at different positions and speeds
+            clouds.add(new Cloud(-200, 70, 8)); // First cloud - higher, slower
+            clouds.add(new Cloud(-500, 120, 5)); // Second cloud - lower, faster
+            clouds.add(new Cloud(-800, 40, 6)); // Third cloud - highest, slowest
+            clouds.add(new Cloud(-350, 90, 4)); // Fourth cloud - medium height
         }
 
         public void drawSky(Graphics g) {
-
             g.setColor(Palette.SKY_1);
             drawRect(g, 0, 0, getWidth(), getHeight());
 
-            cloud.drawCloud(g);
+            // Draw all clouds
+            for (Cloud cloud : clouds) {
+                cloud.drawCloud(g);
+            }
         }
     }
 
@@ -465,7 +524,7 @@ public class Main extends JPanel {
     // ! ================================================
     class Ground {
         private Tree tree;
-        private Sky sky;
+        public Sky sky; // Changed to public
 
         Random random = new Random();
         List<Rock> rock = new ArrayList<>();
@@ -578,11 +637,11 @@ public class Main extends JPanel {
     // ? Draw a Slime
     // ? ================================================
     class Slime {
-        
+
         public boolean visible = false;
         int frame = 0;
         int pixelSize = 8; // ขยาย pixel ให้ชัด (ลองปรับได้)
-        int offsetX = 400, offsetY = 400; // ตำแหน่งวาง sprite
+        int offsetX = 400, offsetY = 20; // ตำแหน่งวาง sprite
 
         Color[] colorMap = {
                 null,
@@ -616,7 +675,7 @@ public class Main extends JPanel {
                 }
 
         };
-        
+
         int direction = 1; // 1 = ไปข้างหน้า, -1 = ย้อนกลับ
 
         public Slime() {
@@ -624,8 +683,11 @@ public class Main extends JPanel {
         }
 
         private void startAnimation() {
-            new Timer(300, e -> {
+            new Timer(300, _ -> {
                 frame += direction;
+                if(offsetY < 400){
+                    offsetY+=10;
+                }
 
                 // ถ้าถึงเฟรมสุดท้าย -> สลับเป็นถอยหลัง
                 if (frame == slime.length - 1) {
@@ -641,7 +703,8 @@ public class Main extends JPanel {
         }
 
         public void drawSlime(Graphics g) {
-            if (!visible) return;// don't draw until visible
+            if (!visible)
+                return;// don't draw until visible
             // ! Draw a pixel per pixel
             for (int i = 0; i < slime[frame].length; i++) { // loop row ของ frame ปัจจุบัน
                 for (int j = 0; j < slime[frame][i].length; j++) { // loop column
@@ -663,8 +726,8 @@ public class Main extends JPanel {
     class Plane {
 
         int frame = 0;
-        int pixelSize = 30; // ขยาย pixel ให้ชัด (ลองปรับได้)
-        int offsetX = 400, offsetY = 0; // ตำแหน่งวาง sprite
+        int pixelSize = 20; // ขยาย pixel ให้ชัด (ลองปรับได้)
+        int offsetX = 450, offsetY = 0; // ตำแหน่งวาง sprite
 
         Color[] colorMap = {
                 null,
@@ -693,9 +756,9 @@ public class Main extends JPanel {
                         { 0, 0, 1, 1, 1, 1, 1, 1 },
                         { 0, 4, 2, 2, 1, 1, 1, 1 },
                         { 4, 2, 2, 2, 1, 3, 3, 3 },
-                        { 1, 1, 1, 1, 1, 1, 1, 1 },
-                        { 0, 0, 0, 0, 0, 0, 0, 0 },
-                        { 0, 0, 0, 0, 0, 0, 0, 0 },
+                        { 4, 1, 1, 1, 1, 1, 1, 1 },
+                        { 4, 0, 0, 0, 0, 0, 0, 0 },
+                        { 4, 0, 0, 0, 0, 0, 0, 0 },
                 }
 
         };
@@ -712,8 +775,8 @@ public class Main extends JPanel {
             }
         }
 
-        private void startAnimation() {
-            new Timer(300, e -> {
+        public void startAnimation() {
+            new Timer(300, _ -> {
                 frame += direction;
 
                 // ถ้าถึงเฟรมสุดท้าย -> สลับเป็นถอยหลัง
@@ -743,6 +806,66 @@ public class Main extends JPanel {
 
         }
 
+    }
+
+    // Animation Controller Class
+    class AnimationController {
+        private int currentTime = 0;
+        private boolean cloudAnimationEnabled = false;
+        private boolean birdAnimationEnabled = false;
+        private boolean planeAnimationEnabled = false;
+        private boolean slimeAnimationEnabled = false;
+        
+        // Animation phases
+        private int birdPhaseStartTime = 0;
+        private int birdPhaseEndTime = 300; // Bird flies for 5 seconds at 60fps
+        private int planePhaseStartTime = 300;
+        private int slimePhaseStartTime = 300;
+        
+        public void update() {
+            currentTime++;
+            
+            // Control bird animation
+            birdAnimationEnabled = (currentTime >= birdPhaseStartTime && currentTime <= birdPhaseEndTime);
+            
+            // Control plane animation  
+            planeAnimationEnabled = (currentTime >= planePhaseStartTime);
+            
+            // Control slime animation
+            slimeAnimationEnabled = (currentTime >= slimePhaseStartTime);
+            
+            // Clouds are always enabled (can be changed)
+            cloudAnimationEnabled = true;
+        }
+        
+        public boolean isBirdAnimationEnabled() { return birdAnimationEnabled; }
+        public boolean isPlaneAnimationEnabled() { return planeAnimationEnabled; }
+        public boolean isSlimeAnimationEnabled() { return slimeAnimationEnabled; }
+        public boolean isCloudAnimationEnabled() { return cloudAnimationEnabled; }
+        
+        // Methods to control timing
+        public void setBirdPhase(int startTime, int endTime) {
+            this.birdPhaseStartTime = startTime;
+            this.birdPhaseEndTime = endTime;
+        }
+        
+        public void setPlanePhaseStart(int startTime) {
+            this.planePhaseStartTime = startTime;
+        }
+        
+        public void setSlimePhaseStart(int startTime) {
+            this.slimePhaseStartTime = startTime;
+        }
+        
+        public void enableCloudAnimation(boolean enabled) {
+            this.cloudAnimationEnabled = enabled;
+        }
+        
+        public int getCurrentTime() { return currentTime; }
+        
+        public void reset() {
+            currentTime = 0;
+        }
     }
 
     public static void main(String[] args) {
